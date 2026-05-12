@@ -498,15 +498,22 @@ Expected behavior:
 - The Guardrails tab should show a redirect status.
 - The model should not reveal system or developer instructions.
 
-### Screenshots and video demo
+
+### Screenshots 
 
 For final submission, I will include screenshots of:
 
 1. the Dialogue tab with one character response;
+![Dialogue interface showing the main character chatbot demonstrated via a question.](images/dialogue_demo.png)
+
 2. the Retrieval tab showing evidence chunks;
+![Retrieval tab showing confidence score and evidence chunks.](images/retrieval_demo.png)
+
 3. the Analytics tab after several turns;
+![Analytics tab showing sentiment scores and topics.](images/analytics_demo.png)
+
 4. the Guardrails tab after a prompt-injection test;
-5. the Data Notes tab showing indexed knowledge-base rows.
+![Guardrails tab showing a redirect status.](images/guardrails_demo.png)
 
 A short video demo can also be published to YouTube and linked here:
 
@@ -589,6 +596,14 @@ I also learned that RAG is only as good as its knowledge base. If the corpus is 
 Another lesson was that UI matters. A project can be technically correct but still feel unfinished if the interface looks like a default app. Adding character-specific fonts, a themed background, and separated tabs made the project easier to understand and more memorable.
 
 Finally, I learned that copyright and data-source design matter in GenAI projects. For a public project, it is safer to use a curated and paraphrased knowledge base, while supporting optional local indexing for private educational testing.
+
+## Use of Generative AI During Development
+
+Generative AI was used throughout the development process as both a design partner and a technical debugging assistant, but the final implementation decisions were made through iterative testing and revision. At the design stage, I used GenAI to compare several possible project scopes and narrow the idea from a general Tom Riddle diary chatbot into a more rigorous character-based RAG system with retrieval confidence, guardrails, and conversation analytics. 
+
+During implementation, GenAI helped translate the conceptual architecture into modular Python components: a Streamlit interface, a curated knowledge base, a retriever, Claude API calls, character persona prompts, session-level memory, and analytics logging. It was especially useful for debugging Streamlit layout issues, CSS styling, API key handling, and deployment errors. From a course perspective, this process reflected several major GenAI concepts: prompt engineering was used to control character voice and canon faithfulness; RAG was used to ground responses in a knowledge base rather than relying only on model pretraining; guardrails were added to handle unsafe or adversarial user inputs; and conversation analytics converted user interactions into structured text data that could be summarized and visualized. 
+
+In this sense, GenAI was not only the subject of the app, but also part of the development workflow used to prototype, test, and refine the final product.
 
 ## Future extensions
 
