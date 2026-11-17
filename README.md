@@ -1,38 +1,67 @@
 # Riddle's Archive
 
-**Riddle's Archive** is a Hogwarts-themed character RAG chatbot built for a GenAI final project. Users choose a character, ask questions, and receive persona-consistent responses generated with Anthropic Claude and grounded in a curated knowledge base.
+**Riddle's Archive** is a RAG-based conversational AI application that combines semantic retrieval, persona prompting, retrieval-confidence signals, guardrails, and conversation analytics in a Streamlit interface.
 
-The app includes:
+Users select a character, ask questions, and receive responses generated with Anthropic Claude using retrieved context from a curated, paraphrased knowledge base.
 
-- character selector for Tom Riddle / Lord Voldemort, Hermione Granger, Luna Lovegood, Sirius Black, and Fred & George Weasley
-- retrieval-augmented generation using a curated/paraphrased Harry Potter knowledge base
-- Claude response generation through the Anthropic API
-- session-based conversation memory
-- retrieval confidence scoring
-- retrieved evidence display
-- live conversation analytics: sentiment trend, retrieved topics, message logs
-- custom CSS styling for a dark Hogwarts/archive aesthetic
+## What the app does
 
-## Project framing
+- retrieves semantically relevant context before generation
+- generates persona-consistent responses with Anthropic Claude
+- maintains session-based conversation history
+- displays retrieved evidence and similarity-based confidence labels
+- applies input guardrails for unsafe requests and prompt-injection attempts
+- logs conversation-level analytics such as sentiment, retrieved topics, message activity, and retrieval confidence
+- provides separate views for dialogue, retrieval, analytics, guardrails, and data notes
 
-Existing character bots are usually entertainment-first and closed-box: users can chat, but they cannot see the data source, retrieval logic, confidence score, or evaluation process. This project adds a transparent RAG pipeline and a lightweight analytics layer so the chatbot can be discussed as a GenAI/data science system rather than only a roleplay interface.
-
-## Data source policy
-
-The app does **not** include the full Harry Potter books or long copyrighted excerpts. The knowledge base in `data/hp_knowledge_base.csv` is manually curated and paraphrased for educational demonstration. Each row contains:
-
-- `chunk_id`
-- `character`
-- `topic`
-- `source_type`
-- `text`
-
-This structure makes the app reproducible and allows retrieval results to be inspected.
-
-## File structure
+## How it works
 
 ```text
-riddles_archive/
+User query
+  → input guardrail
+  → query embedding
+  → semantic retrieval
+  → retrieval-confidence label
+  → persona prompt + retrieved context
+  → Claude response generation
+  → reliability note
+  → evidence display + conversation analytics
+```
+
+The retrieval layer uses Sentence Transformers to embed the user query and knowledge-base chunks, then compares them with cosine similarity. Retrieved chunks are passed to the model as grounding context before response generation.
+
+## Key technical features
+
+### Retrieval-Augmented Generation
+A structured knowledge base is embedded and searched before each response so generation is grounded in project-specific context rather than model memory alone.
+
+### Persona prompting
+Character-specific prompts control voice and behavior while retrieved evidence provides factual grounding.
+
+### Retrieval confidence
+Average retrieval similarity is converted into a simple confidence label. This is a transparency aid, not a probabilistic uncertainty estimate.
+
+### Guardrails
+The application includes app-level checks that block clearly unsafe requests, redirect prompt-injection attempts, and add reliability notes when retrieval confidence is weak.
+
+### Conversation analytics
+Interaction logs are converted into structured data for live summaries and visualizations, including sentiment, message length, retrieved topics, average similarity, and low-confidence rate.
+
+## Tech stack
+
+- **Python**
+- **Streamlit**
+- **Anthropic Claude API**
+- **Sentence Transformers**
+- **scikit-learn cosine similarity**
+- **pandas**
+- **Plotly**
+- **VADER Sentiment**
+
+## Repository structure
+
+```text
+riddles-archive/
 ├── app.py
 ├── requirements.txt
 ├── README.md
@@ -46,18 +75,21 @@ riddles_archive/
 │   ├── claude_client.py
 │   ├── rag.py
 │   └── styling.py
-└── tutorial/
-    └── final_project_tutorial.qmd
+├── tutorial/
+│   └── riddles_archive_tutorial.qmd
+├── Background.webp
+├── Hogwarts.jpg
+└── Map.jpg
 ```
 
-## Setup
+## Run locally
 
 ### 1. Create a virtual environment
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # macOS/Linux
-# .venv\Scripts\activate   # Windows
+source .venv/bin/activate
+# Windows: .venv\Scripts\activate
 ```
 
 ### 2. Install dependencies
@@ -66,55 +98,42 @@ source .venv/bin/activate  # macOS/Linux
 pip install -r requirements.txt
 ```
 
-### 3. Add your Anthropic API key
+### 3. Configure the Anthropic API key
 
-For local development, create `.streamlit/secrets.toml`:
+Copy the example secrets file:
+
+```bash
+cp .streamlit/secrets.toml.example .streamlit/secrets.toml
+```
+
+Then replace the placeholder value in `.streamlit/secrets.toml`:
 
 ```toml
 ANTHROPIC_API_KEY = "your-anthropic-api-key-here"
 ```
 
-Do **not** commit the real `secrets.toml` file to GitHub.
+Do not commit the real secrets file.
 
-For Streamlit Cloud, add the same key under **App settings → Secrets**.
-
-### 4. Run the app
+### 4. Launch the app
 
 ```bash
 streamlit run app.py
 ```
 
-## Deployment
+## Data and copyright note
 
-The easiest deployment path is Streamlit Community Cloud:
+The public repository does **not** include the full Harry Potter books or long copyrighted excerpts. The included knowledge base in `data/hp_knowledge_base.csv` is curated and paraphrased for demonstration purposes.
 
-1. Push this project folder to a GitHub repository.
-2. Go to Streamlit Cloud.
-3. Create a new app from the GitHub repo.
-4. Set the main file path to `app.py`.
-5. Add `ANTHROPIC_API_KEY` in Streamlit secrets.
-6. Deploy.
-
-## Notes for grading
-
-The app is designed around four grading-friendly components:
-
-1. **RAG logic**: user questions retrieve semantically relevant context before Claude generates a response.
-2. **Prompt engineering**: each character has a specific persona prompt and the user can control persona intensity.
-3. **Uncertainty/confidence layer**: retrieval similarity is converted into a confidence label so weakly grounded responses are flagged.
-4. **Conversation analytics**: the app logs sentiment, message length, retrieved topics, and confidence across the conversation.
+The application can also work with local source text during development, but local/private source files are excluded from version control.
 
 ## Limitations
 
-- The knowledge base is intentionally compact and paraphrased, so it does not cover every part of the series.
-- Character voice is simulated through prompting and retrieval, not trained as a custom model.
-- Confidence is based on retrieval similarity, not a full probabilistic uncertainty model.
-- The app uses session memory only; long-term user storage is not enabled.
+- The public knowledge base is intentionally compact and does not cover the full series.
+- Persona behavior is created through prompting and retrieval rather than model fine-tuning.
+- Retrieval confidence is based on similarity scores and should not be interpreted as calibrated model uncertainty.
+- Conversation memory is session-based; there is no persistent long-term user storage.
+- The application is a portfolio prototype rather than a production deployment.
 
-## Future extensions
+## Additional documentation
 
-- Expand the knowledge base by book, scene, relationship, and theme.
-- Add a small hand-labeled retrieval evaluation set and compute Precision@K / MRR.
-- Add audio narration or character voice effects.
-- Add an optional "Weasleys' Wizard Wheezes interruption" mode.
-- Add user controls for canon strictness, tone, and spoiler level.
+A longer technical walkthrough is available in [`tutorial/riddles_archive_tutorial.qmd`](tutorial/riddles_archive_tutorial.qmd).
