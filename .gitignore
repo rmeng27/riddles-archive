@@ -1,15 +1,11 @@
 .venv/
-__pycache__/
-*.pyc
-.env
-.streamlit/secrets.toml
-.DS_Store
-# Python
-__pycache__/
-*.py[cod]
-.venv/
 venv/
 env/
+__pycache__/
+*.py[cod]
+.env
+.DS_Store
+.Rapp.history
 
 # Streamlit secrets
 .streamlit/secrets.toml
@@ -18,12 +14,9 @@ env/
 data/books/
 *.epub
 
-# Mac
-.DS_Store
-
 # Quarto outputs/cache
 .quarto/
 *_files/
 
-# Optional local media you do not have rights to publish
+# Optional local media not intended for the public repo
 assets/audio/background.mp3
